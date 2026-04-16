@@ -100,6 +100,8 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',  # Vite default port
     'http://127.0.0.1:5173',
+    '.ngrok-free.app',  # This dot is important, it allows all ngrok subdomains
+
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
