@@ -54,7 +54,7 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tickets" element={<TicketList />} />
             <Route path="/tickets/:id" element={<TicketDetail />} />
-            <Route path="/customers" element={<Navigate to="/tickets" replace />} />
+            <Route path="/customers" element={<CustomerProfile />} />
             <Route path="/customers/:id" element={<CustomerProfile />} />
           </Routes>
         </main>
