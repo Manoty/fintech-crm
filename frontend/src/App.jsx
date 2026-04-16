@@ -1,121 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
+import Dashboard from './pages/Dashboard'
+import TicketList from './pages/TicketList'
+import TicketDetail from './pages/TicketDetail'
+import CustomerProfile from './pages/CustomerProfile'
+import { LayoutDashboard, Ticket, Users } from 'lucide-react'
 
-function App() {
-  const [count, setCount] = useState(0)
+const navItems = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/tickets',   label: 'Tickets',   icon: Ticket },
+  { to: '/customers', label: 'Customers', icon: Users },
+]
 
+function Sidebar() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <aside className="w-56 bg-gray-900 min-h-screen flex flex-col flex-shrink-0">
+      <div className="px-5 py-5 border-b border-gray-700">
+        <h1 className="text-white font-bold text-lg tracking-tight">Payd CRM</h1>
+        <p className="text-gray-400 text-xs mt-0.5">Support Platform</p>
+      </div>
+      <nav className="flex-1 px-3 py-4 space-y-1">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`
+            }
+          >
+            <Icon size={17} />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+      <div className="px-5 py-4 border-t border-gray-700">
+        <p className="text-gray-500 text-xs">v1.0.0 · MVP</p>
+      </div>
+    </aside>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <div className="flex bg-gray-50 min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-6 overflow-auto">
+          <Routes>
+            <Route path="/"               element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard"      element={<Dashboard />} />
+            <Route path="/tickets"        element={<TicketList />} />
+            <Route path="/tickets/:id"    element={<TicketDetail />} />
+            <Route path="/customers"      element={<Navigate to="/tickets" replace />} />
+            <Route path="/customers/:id"  element={<CustomerProfile />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  )
+}
