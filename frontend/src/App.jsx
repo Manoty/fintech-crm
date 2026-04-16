@@ -1,15 +1,15 @@
-import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
-import TicketList from './pages/TicketList'
-import TicketDetail from './pages/TicketDetail'
-import CustomerProfile from './pages/CustomerProfile'
-import { LayoutDashboard, Ticket, Users } from 'lucide-react'
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import TicketList from './pages/TicketList';
+import TicketDetail from './pages/TicketDetail';
+import CustomerProfile from './pages/CustomerProfile';
+import { LayoutDashboard, Ticket, Users } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/tickets',   label: 'Tickets',   icon: Ticket },
+  { to: '/tickets', label: 'Tickets', icon: Ticket },
   { to: '/customers', label: 'Customers', icon: Users },
-]
+];
 
 function Sidebar() {
   return (
@@ -40,7 +40,7 @@ function Sidebar() {
         <p className="text-gray-500 text-xs">v1.0.0 · MVP</p>
       </div>
     </aside>
-  )
+  );
 }
 
 export default function App() {
@@ -50,15 +50,15 @@ export default function App() {
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
           <Routes>
-            <Route path="/"               element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard"      element={<Dashboard />} />
-            <Route path="/tickets"        element={<TicketList />} />
-            <Route path="/tickets/:id"    element={<TicketDetail />} />
-            <Route path="/customers"      element={<Navigate to="/tickets" replace />} />
-            <Route path="/customers/:id"  element={<CustomerProfile />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/tickets" element={<TicketList />} />
+            <Route path="/tickets/:id" element={<TicketDetail />} />
+            <Route path="/customers" element={<Navigate to="/tickets" replace />} />
+            <Route path="/customers/:id" element={<CustomerProfile />} />
           </Routes>
         </main>
       </div>
     </BrowserRouter>
-  )
+  );
 }
