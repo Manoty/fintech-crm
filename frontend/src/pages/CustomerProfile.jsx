@@ -6,6 +6,7 @@ import { Phone, Mail, Calendar } from 'lucide-react'
 
 export default function CustomerProfile() {
   const { id } = useParams()
+  console.log('Customer ID:', id)
   const [customer, setCustomer] = useState(null)
   const [tickets, setTickets]   = useState([])
   const [loading, setLoading]   = useState(true)

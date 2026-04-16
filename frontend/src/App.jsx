@@ -4,11 +4,12 @@ import TicketList from './pages/TicketList';
 import TicketDetail from './pages/TicketDetail';
 import CustomerProfile from './pages/CustomerProfile';
 import { LayoutDashboard, Ticket, Users } from 'lucide-react';
+import NewTicket from './pages/NewTicket'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/tickets', label: 'Tickets', icon: Ticket },
-  { to: '/customers', label: 'Customers', icon: Users },
+  
 ];
 
 function Sidebar() {
@@ -53,6 +54,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tickets" element={<TicketList />} />
+            <Route path="/tickets/new"   element={<NewTicket />} />
             <Route path="/tickets/:id" element={<TicketDetail />} />
             <Route path="/customers" element={<CustomerProfile />} />
             <Route path="/customers/:id" element={<CustomerProfile />} />
