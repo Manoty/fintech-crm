@@ -5,7 +5,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from tickets.models import Ticket
 
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def me(request):
+    return Response({
+        'id': request.user.id,
+        'username': request.user.username,
+        'full_name': request.user.get_full_name() or request.user.username,})
+    
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):

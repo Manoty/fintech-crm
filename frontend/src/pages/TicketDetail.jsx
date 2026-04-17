@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import { getTicket, postMessage, resolveTicket, updateTicket } from '../api'
 import { StatusBadge, PriorityBadge } from '../utils/badges'
 import { Lock, Send, CheckCircle } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+
 
 function MessageBubble({ msg }) {
   if (msg.is_internal) {
@@ -48,7 +50,8 @@ export default function TicketDetail() {
   const [loading, setLoading]       = useState(true)
   const [replyBody, setReplyBody]   = useState('')
   const [isInternal, setIsInternal] = useState(false)
-  const [senderName, setSenderName] = useState('Agent')
+  const { user } = useAuth()
+  const [senderName, setSenderName] = useState('')
   const [sending, setSending]       = useState(false)
   const [resolving, setResolving]   = useState(false)
   const bottomRef = useRef(null)
@@ -64,6 +67,10 @@ export default function TicketDetail() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [ticket?.messages])
+
+  useEffect(() => {
+    if (user) setSenderName(user.full_name)
+  }, [user])
 
   const handleSend = async () => {
     if (!replyBody.trim()) return
