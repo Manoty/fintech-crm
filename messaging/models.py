@@ -7,6 +7,7 @@ class Message(models.Model):
         CUSTOMER = 'customer', 'Customer'
         AGENT = 'agent', 'Agent'
         INTERNAL = 'internal', 'Internal Note'
+        SYSTEM   = 'system',   'System Event'
 
     class Channel(models.TextChoices):
         WHATSAPP = 'whatsapp', 'WhatsApp'
