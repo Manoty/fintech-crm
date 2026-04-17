@@ -4,6 +4,54 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+
+@csrf_exempt
+@require_POST
+@permission_classes([AllowAny])
+
+def whatsapp_webhook(request):
+    """
+    Main webhook endpoint — Twilio calls this for every inbound WhatsApp message.
+
+    Twilio POST fields (form-encoded, not JSON):
+      From       → whatsapp:+254700000001
+      Body       → message text
+      MessageSid → unique Twilio message ID (SM...)
+      ProfileName → WhatsApp display name of sender
+    """
+    # ── Parse Twilio POST data ──────────────────────────────────────────────
+    from_field = request.POST.get('From', '')       # whatsapp:+254700000001
+    body = request.POST.get('Body', '').strip()
+    message_sid = request.POST.get('MessageSid', '')
+    profile_name = request.POST.get('ProfileName', '')
+
+    # Strip the "whatsapp:" prefix to get clean E.164 phone number
+    phone_number = from_field.replace('whatsapp:', '')
+
+    print(f"\n[Webhook] ─── Inbound message ───────────────────────")
+    print(f"[Webhook] From:       {phone_number}")
+    print(f"[Webhook] Name:       {profile_name}")
+    print(f"[Webhook] Body:       {body}")
+    print(f"[Webhook] MessageSid: {message_sid}")
+    print(f"[Webhook] ─────────────────────────────────────────────\n")
+
+    # ── Guard: ignore empty messages ────────────────────────────────────────
+    if not phone_number or not body:
+        print("[Webhook] Empty phone or body — ignoring.")
+        twiml = MessagingResponse()
+        return HttpResponse(str(twiml), content_type='text/xml')
+
+    # ── Core logic ──────────────────────────────────────────────────────────
+    customer, _ = get_or_create_customer(phone_number, profile_name)
+    ticket, is_new_ticket = get_or_create_ticket(customer, body)
+    save_inbound_message(ticket, customer, body, message_sid)
+    send_auto_reply(phone_number, ticket, is_new_ticket)
+
+    # ── Return empty TwiML (auto-reply sent via API, not TwiML body) ────────
+    twiml = MessagingResponse()
+    return HttpResponse(str(twiml), content_type='text/xml')
 
 
 def get_or_create_customer(phone_number, profile_name=""):
@@ -119,48 +167,3 @@ def send_auto_reply(to_number, ticket, is_new_ticket):
     except Exception as e:
         # Never let a Twilio error crash the webhook response
         print(f"[Webhook] Auto-reply failed: {e}")
-
-
-@csrf_exempt
-@require_POST
-def whatsapp_webhook(request):
-    """
-    Main webhook endpoint — Twilio calls this for every inbound WhatsApp message.
-
-    Twilio POST fields (form-encoded, not JSON):
-      From       → whatsapp:+254700000001
-      Body       → message text
-      MessageSid → unique Twilio message ID (SM...)
-      ProfileName → WhatsApp display name of sender
-    """
-    # ── Parse Twilio POST data ──────────────────────────────────────────────
-    from_field = request.POST.get('From', '')       # whatsapp:+254700000001
-    body = request.POST.get('Body', '').strip()
-    message_sid = request.POST.get('MessageSid', '')
-    profile_name = request.POST.get('ProfileName', '')
-
-    # Strip the "whatsapp:" prefix to get clean E.164 phone number
-    phone_number = from_field.replace('whatsapp:', '')
-
-    print(f"\n[Webhook] ─── Inbound message ───────────────────────")
-    print(f"[Webhook] From:       {phone_number}")
-    print(f"[Webhook] Name:       {profile_name}")
-    print(f"[Webhook] Body:       {body}")
-    print(f"[Webhook] MessageSid: {message_sid}")
-    print(f"[Webhook] ─────────────────────────────────────────────\n")
-
-    # ── Guard: ignore empty messages ────────────────────────────────────────
-    if not phone_number or not body:
-        print("[Webhook] Empty phone or body — ignoring.")
-        twiml = MessagingResponse()
-        return HttpResponse(str(twiml), content_type='text/xml')
-
-    # ── Core logic ──────────────────────────────────────────────────────────
-    customer, _ = get_or_create_customer(phone_number, profile_name)
-    ticket, is_new_ticket = get_or_create_ticket(customer, body)
-    save_inbound_message(ticket, customer, body, message_sid)
-    send_auto_reply(phone_number, ticket, is_new_ticket)
-
-    # ── Return empty TwiML (auto-reply sent via API, not TwiML body) ────────
-    twiml = MessagingResponse()
-    return HttpResponse(str(twiml), content_type='text/xml')

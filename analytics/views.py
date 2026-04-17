@@ -1,15 +1,25 @@
-from django.db.models import Avg, F, ExpressionWrapper, DurationField, Count
+from django.db.models import F, ExpressionWrapper, DurationField, Count
 from django.utils import timezone
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from tickets.models import Ticket
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    request.user.auth_token.delete()
+    return Response({'detail': 'Logged out.'})
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def analytics_summary(request):
-    # Local imports to avoid any circular issues
     from tickets.models import Ticket
 
     all_tickets = Ticket.objects.all()
+    
 
     # ── Basic counts ────────────────────────────────────────────
     total_tickets    = all_tickets.count()
