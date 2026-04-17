@@ -8,6 +8,7 @@ import {
   InboxIcon, ChevronLeft, ChevronRight,
   TrendingUp, Activity
 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const PAGE_SIZE = 5
 
@@ -51,6 +52,8 @@ export default function Dashboard() {
   const [page, setPage]                   = useState(1)
   const [loadingStats, setLoadingStats]   = useState(true)
   const [loadingTable, setLoadingTable]   = useState(true)
+  const { user }                          = useAuth()
+  const [myTickets, setMyTickets]         = useState(false)
 
   // Load analytics once
   useEffect(() => {
@@ -63,7 +66,7 @@ export default function Dashboard() {
   // Load paginated tickets
   useEffect(() => {
     setLoadingTable(true)
-    getTickets({ page, page_size: PAGE_SIZE })
+    getTickets(params)
       .then(r => {
         const data = r.data
         if (data.results) {
@@ -78,7 +81,7 @@ export default function Dashboard() {
       })
       .catch(console.error)
       .finally(() => setLoadingTable(false))
-  }, [page])
+  }, [page, myTickets, user])
 
   const totalPages = Math.ceil(totalTickets / PAGE_SIZE)
 
@@ -221,16 +224,34 @@ export default function Dashboard() {
       )}
 
       {/* Recent Tickets — paginated */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <div>
-            <h2 className="font-bold text-gray-800">Recent Tickets</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{totalTickets} total</p>
-          </div>
-          <Link to="/tickets" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
-            View all →
-          </Link>
+      {/* Recent Tickets — paginated */}
+<div className="bg-white rounded-xl shadow-sm border border-gray-100">
+  <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+    <div>
+      <h2 className="font-bold text-gray-800">Recent Tickets</h2>
+      <p className="text-xs text-gray-400 mt-0.5">{totalTickets} total</p>
+    </div>
+    <div className="flex items-center gap-3">
+      {/* My Tickets toggle */}
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <div
+          onClick={() => { setMyTickets(m => !m); setPage(1) }}
+          className={`w-8 h-4 rounded-full transition-colors relative ${
+            myTickets ? 'bg-emerald-500' : 'bg-gray-200'
+          }`}
+        >
+          <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${
+            myTickets ? 'translate-x-4' : 'translate-x-0.5'
+          }`} />
         </div>
+        <span className="text-xs text-gray-500">My tickets</span>
+      </label>
+      <Link to="/tickets" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+        View all →
+      </Link>
+    </div>
+  </div>
+      
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
