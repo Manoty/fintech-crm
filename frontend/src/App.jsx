@@ -10,14 +10,16 @@ import CustomerProfile from './pages/CustomerProfile'
 import NewTicket from './pages/NewTicket'
 import Login from './pages/Login'
 import {
-  LayoutDashboard, Ticket, LogOut,
+  LayoutDashboard, Ticket, LogOut, Users,
   Search, Plus, X, Command
 } from 'lucide-react'
 import { getTickets, getCustomers } from './api'
+import CustomerList from './pages/CustomerList'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/tickets',   label: 'Tickets',   icon: Ticket },
+  { to: '/customers', label: 'Clients', icon: Users },
 ]
 
 // ── Command Palette ────────────────────────────────────────────────────────
@@ -222,7 +224,7 @@ function AppShell() {
           <Route path="/tickets"       element={<TicketList />} />
           <Route path="/tickets/new"   element={<NewTicket />} />
           <Route path="/tickets/:id"   element={<TicketDetail />} />
-          <Route path="/customers"     element={<Navigate to="/tickets" replace />} />
+          <Route path="/customers"     element={<CustomerList />} />
           <Route path="/customers/:id" element={<CustomerProfile />} />
         </Routes>
       </main>
