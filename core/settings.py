@@ -131,3 +131,12 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ── Production guards ─────────────────────────────────────────────────────
+if not DEBUG:
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+    SECURE_BROWSER_XSS_FILTER       = True
+    SECURE_CONTENT_TYPE_NOSNIFF     = True
+    X_FRAME_OPTIONS                 = 'DENY'
+    SESSION_COOKIE_SECURE           = True
+    CSRF_COOKIE_SECURE              = True
